@@ -18,6 +18,20 @@ outputs:
 runs:
   using: composite
   steps:
+    - id: check-python
+      shell: bash
+      run: | # shell
+        if command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
+          echo "installed=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "installed=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - if: steps.check-python.outputs.installed == 'false'
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
     - id: parser
       shell: python
       run: | # python
