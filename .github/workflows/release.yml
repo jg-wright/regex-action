@@ -15,18 +15,20 @@ jobs:
       - name: 🚚  Checkout project
         uses: actions/checkout@v4
 
-      - name: 🚀  Publish Release
-        uses: codfish/semantic-release-action@v3
-        id: release
+      - id: app-token
+        uses: actions/create-github-app-token@v3
         with:
-          plugins: |
-            [
-              "@semantic-release/commit-analyzer", 
-              "@semantic-release/release-notes-generator", 
-              "@semantic-release/github"
-            ]
+          client-id: ${{ secrets.APP_CLIENT_ID }}
+          private-key: ${{ secrets.APP_PEM }}
+          permission-contents: write
+          permission-issues: write
+          permission-pull-requests: write
+
+      - name: 🚀  Publish Release
+        id: release
+        uses: cycjimmy/semantic-release-action@v6
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
   update-readme:
     name: 📖  Update version in README
@@ -35,4 +37,3 @@ jobs:
     uses: ./.github/workflows/update-readme.yml
     with:
       release-version: ${{ needs.release.outputs.release-version }}
-    
