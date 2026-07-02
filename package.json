@@ -1,5 +1,6 @@
 {
   "name": "regex-action",
+  "private": true,
   "version": "1.0.0",
   "description": "A GitHub action that applies a regular expression to an input and outputs the groups.",
   "homepage": "https://github.com/jg-wright/regex-action#readme",
