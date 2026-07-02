@@ -67,7 +67,7 @@ jobs:
       - name: 📦  Install git
         run: |
           apt-get update
-          apt-get install -y --no-install-recommends git
+          apt-get install -y --no-install-recommends git ca-certificates
 
       - name: 🧪  Assert Python is not preinstalled
         run: |
