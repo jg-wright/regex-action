@@ -57,3 +57,41 @@ jobs:
             echo "$LETTER does not equal 'h'"
             exit 1
           fi
+
+  test-without-python:
+    name: Test (no Python preinstalled)
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:latest
+    steps:
+      - name: 📦  Install git
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends git
+
+      - name: 🧪  Assert Python is not preinstalled
+        run: |
+          if command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1
+          then
+            echo "Python is preinstalled; this test requires an image without it"
+            exit 1
+          fi
+
+      - name: 🚚  Checkout project
+        uses: actions/checkout@v6
+
+      - name: Test Single Line
+        id: test
+        uses: ./
+        with:
+          ref: refs/tags/@johngw/my-package-v1.2.3
+          regex: refs/tags/(?P<package>@johngw/[a-zA-Z0-9_-]+)-v(?P<version>\d+.\d+.\d+)$
+
+      - name: 🧪  Assert Package
+        run: |
+          PACKAGE='${{ fromJSON(steps.test.outputs.groups).package }}'
+          if [[ $PACKAGE != '@johngw/my-package' ]]
+          then
+            echo "$PACKAGE does not equal '@johngw/my-package'"
+            exit 1
+          fi
